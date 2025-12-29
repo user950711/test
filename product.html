@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>商品詳細｜TechNova</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- 導覽列 -->
+    <header class="navbar">
+        <div class="logo">TechNova</div>
+
+        <div class="right-section">
+            <!-- 導覽選單（只放選單） -->
+            <nav id="navMenu">
+                <a href="index.html">首頁</a>
+                <a href="products.html">商品</a>
+                <!-- <a href="#">關於我們</a>
+                <a href="#">聯絡我們</a> -->
+                <a href="download.html">下載</a>
+                <a href="login.html">登入</a>
+            </nav>
+
+            <!-- 右側功能區 -->
+            <div class="nav-actions">
+                <!-- 購物車（獨立） -->
+                <a href="shopping.html" class="cart-icon">
+                    🛒 <span id="cartCount">0</span>
+                </a>
+
+                <!-- 漢堡按鈕 -->
+                <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 商品詳細區 -->
+    <section class="products">
+        <h2>商品詳細</h2>
+
+        <div class="product-detail" id="detail">
+            <div id="productImgContainer">
+                <img id="productImg" src="" alt="產品圖片">
+            </div>
+            <div id="productInfo">
+                <h2 id="productName"></h2>
+                <p id="productDesc"></p>
+                <h3 id="productPrice"></h3>
+                <div id="specArea"></div>
+                <button class="add-to-cart-btn" onclick="addToCart()">加入購物車</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 頁尾 -->
+    <footer>
+        © 2025 TechNova 智慧 3C 選物店
+    </footer>
+
+    <script src="products.js"></script>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cartCount").innerText = count;
+
+        const params = new URLSearchParams(location.search);
+        const productId = params.get("id");
+        const product = products.find(p => p.id === productId);
+
+        // if (product) {
+        //     let currentSpec = product.specs[0];
+
+        //     document.getElementById("productName").innerText = product.name;
+        //     document.getElementById("productImg").src = currentSpec.img;
+        //     document.getElementById("productDesc").innerText = currentSpec.desc;
+        //     document.getElementById("productPrice").innerText = "$" + currentSpec.price;
+
+        //     const specArea = document.getElementById("specArea");
+        //     product.specs.forEach(spec => {
+        //         const btn = document.createElement("button");
+        //         btn.innerText = spec.label;
+        //         btn.onclick = () => {
+        //             currentSpec = spec;
+        //             document.getElementById("productImg").src = spec.img;
+        //             document.getElementById("productDesc").innerText = spec.desc;
+        //             document.getElementById("productPrice").innerText = "$" + spec.price;
+        //         };
+        //         specArea.appendChild(btn);
+        //     });
+        // } else {
+        //     document.getElementById("detail").innerHTML = "<p>產品未找到</p>";
+        // }
+
+        // function addToCart() {
+        //     const params = new URLSearchParams(location.search);
+        //     const productId = params.get("id");
+        //     let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        //     let item = cart.find(i => i.id === productId);
+        //     if (item) {
+        //         item.quantity++;
+        //     } else {
+        //         cart.push({id: productId, quantity: 1});
+        //     }
+        //     localStorage.setItem('cart', JSON.stringify(cart));
+        //     count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        //     document.getElementById("cartCount").innerText = count;
+        //     alert("已加入購物車！");
+        // }
+
+        // 第二版(Gemini)
+        if (product) {
+            let currentSpecIndex = 0; // 新增：記錄目前選中的規格索引
+            let currentSpec = product.specs[0];
+
+            document.getElementById("productName").innerText = product.name;
+            document.getElementById("productImg").src = currentSpec.img;
+            document.getElementById("productDesc").innerText = currentSpec.desc;
+            document.getElementById("productPrice").innerText = "$" + currentSpec.price;
+
+            const specArea = document.getElementById("specArea");
+            product.specs.forEach((spec, index) => { // 修改：加入 index
+                const btn = document.createElement("button");
+                btn.innerText = spec.label;
+                btn.onclick = () => {
+                    currentSpecIndex = index; // 更新索引
+                    currentSpec = spec;
+                    document.getElementById("productImg").src = spec.img;
+                    document.getElementById("productDesc").innerText = spec.desc;
+                    document.getElementById("productPrice").innerText = "$" + spec.price;
+                };
+                specArea.appendChild(btn);
+            });
+
+            // 修改後的 addToCart 函式
+            window.addToCart = function() { // 確保全域可呼叫
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                // 尋找購物車中是否已有「同產品且同規格」的項目
+                let item = cart.find(i => i.id === productId && i.specIndex === currentSpecIndex);
+                
+                if (item) {
+                    item.quantity++;
+                } else {
+                    // 存入時多帶一個 specIndex
+                    cart.push({id: productId, specIndex: currentSpecIndex, quantity: 1});
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                count = cart.reduce((sum, item) => sum + item.quantity, 0);
+                document.getElementById("cartCount").innerText = count;
+                alert("已加入購物車！");
+            }
+        }
+
+        // 漢堡選單
+        function toggleMenu() {
+            const menu = document.getElementById("navMenu");
+            menu.classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

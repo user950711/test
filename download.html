@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>資源下載｜TechNova</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .download-container {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .download-header h1 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .download-header p {
+            color: #888;
+            margin-bottom: 40px;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .download-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 40px;
+            transition: 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .download-card:hover {
+            border-color: #ff4d4d;
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255, 77, 77, 0.1);
+        }
+
+        .icon-box {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .download-card h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .download-card p {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .download-btn {
+            background: #ff4d4d;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .download-card:hover .download-btn {
+            background: #fff;
+            color: #ff4d4d;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo" onclick="location.href='index.html'" style="cursor:pointer">TechNova</div>
+        <nav id="navMenu">
+            <a href="index.html">首頁</a>
+            <a href="products.html">商品</a>
+            <a href="download.html">下載</a>
+            <a href="login.html">登入</a>
+        </nav>
+    </header>
+
+    <div class="download-container">
+        <div class="download-header">
+            <h1>資源下載中心</h1>
+            <p>本站圖片均來自網路，若有版權問題請聯繫我們。下方提供詳細圖片來源文件下載。</p>
+        </div>
+
+        <div class="download-grid">
+            <a href="示意圖來源.docx" class="download-card" download>
+                <div class="icon-box">🖼️</div>
+                <h3>示意圖來源</h3>
+                <p>包含首頁 Banner、活動背景、以及網站裝飾用之情境圖片連結與授權說明。</p>
+                <span class="download-btn">點擊下載 .DOCX</span>
+            </a>
+
+            <a href="商品圖片來源.docx" class="download-card" download>
+                <div class="icon-box">💻</div>
+                <h3>商品圖片來源</h3>
+                <p>包含筆電、耳機、鍵盤等所有商城內上架商品之官方及電商平台圖片來源清單。</p>
+                <span class="download-btn">點擊下載 .DOCX</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById("navMenu");
+            menu.classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

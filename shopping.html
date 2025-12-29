@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>購物車｜TechNova</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 針對購物車頁面額外微調的樣式 */
+        /* .cart-item {
+            display: flex;
+            align-items: center;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        } */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            flex-wrap: wrap; /* 允許內容換行 */
+        }
+        .cart-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .item-info {
+            flex: 1;
+            margin-left: 20px;
+        }
+        .item-info h3 {
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        .item-info p {
+            color: #aaa;
+            font-size: 14px;
+        }
+        .item-spec {
+            display: inline-block;
+            background: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 0 30px;
+        }
+        .cart-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .cart-btn:hover {
+            background: #ff4d4d;
+        }
+        .price-info {
+            text-align: right;
+            min-width: 120px;
+        }
+        .remove-link {
+            color: #ff4d4d;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+            display: block;
+            margin-top: 10px;
+        }
+        .cart-summary {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: right;
+            margin-top: 30px;
+            border-top: 2px solid #ff4d4d;
+            color:#fff;
+        }
+        .cart-summary h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .checkout-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        /* --- 手機版 RWD 優化 (螢幕小於 768px 時) --- */
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column; /* 改為垂直排列 */
+                align-items: flex-start; /* 文字對齊左側 */
+                padding: 15px;
+            }
+
+            .cart-item img {
+                width: 100%; /* 圖片撐滿寬度 */
+                height: 200px; /* 固定高度避免變形 */
+                margin-bottom: 15px;
+            }
+
+            .item-info {
+                margin-left: 0; /* 手機版不需要左邊距 */
+                margin-bottom: 15px;
+                width: 100%;
+            }
+
+            .quantity-control {
+                margin: 10px 0; /* 調整加減按鈕間距 */
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .price-info {
+                text-align: left; /* 價格改為左對齊 */
+                width: 100%;
+                border-top: 1px solid #333;
+                padding-top: 10px;
+                margin-top: 10px;
+            }
+
+            /* 結帳區塊在手機版也改為寬度 100% */
+            .cart-summary {
+                max-width: 100%;
+                margin-top: 20px;
+            }
+
+            .total-amount {
+                font-size: 26px; /* 手機版字體稍微縮小點 */
+            }
+        }
+    </style>
+    <!-- <style>
+        /* --- 結帳摘要區塊核心優化 --- */
+        .cart-summary {
+            background: #111111; /* 使用更深的黑色，與卡片 #1a1a1a 產生層次感 */
+            padding: 30px;
+            border-radius: 16px;
+            margin-top: 40px;
+            border: 1px solid #333;
+            max-width: 450px; 
+            margin-left: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); /* 加強陰影深度 */
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: #888; /* 降低非重點文字的亮度 */
+            font-size: 16px;
+        }
+
+        .summary-line.total {
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            margin-top: 20px;
+            color: #fff; /* 「總計金額」字樣用白色 */
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* 針對顏色對比度進行優化 */
+        .total-amount {
+            color: #ff3333; /* 使用更高飽和度的鮮紅色 */
+            font-size: 32px;
+            font-weight: 900;
+            /* 核心：加入文字發光效果，徹底拉開與背景的距離 */
+            text-shadow: 0 0 15px rgba(255, 51, 51, 0.3); 
+            letter-spacing: -1px;
+        }
+
+        .summary-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .checkout-btn {
+            background: #ff4d4d; /* 保持你的品牌色 */
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .checkout-btn:hover {
+            background: #ff6666; /* 懸停時變亮 */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 77, 77, 0.4);
+        }
+
+        .clear-cart-text {
+            color: #666;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            margin-top: 5px;
+        }
+
+        .clear-cart-text:hover {
+            color: #ff4d4d;
+        }
+
+        /* 運費強調 */
+        .shipping-free {
+            color: #00ff88; /* 螢光綠，非常醒目 */
+            font-weight: bold;
+        }
+    </style> -->
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">TechNova</div>
+        <div class="right-section">
+            <nav id="navMenu">
+                <a href="index.html">首頁</a>
+                <a href="products.html">商品</a>
+                <a href="#">關於我們</a>
+                <a href="#">聯絡我們</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="shopping.html" class="cart-icon">
+                    🛒 <span id="cartCount">0</span>
+                </a>
+                <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="products" style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
+        <h2 style="margin-bottom: 30px;">您的購物車</h2>
+
+        <div id="cartContainer">
+            </div>
+
+        <div class="cart-summary" id="cartSummary" style="display: none;">
+            <h3>總計金額： $<span id="totalPrice">0</span></h3>
+            <button class="cart-btn" onclick="clearCart()" style="margin-right: 10px; background: #444;">清空購物車</button>
+            <button class="checkout-btn" onclick="checkout()">前往結帳</button>
+        </div>
+        <!-- <div class="cart-summary" id="cartSummary" style="display: none;">
+            <div class="summary-line">
+                <span>商品小計</span>
+                <span style="color: #eee;">$<span id="subtotalPrice">0</span></span>
+            </div>
+            <div class="summary-line">
+                <span>預估運費</span>
+                <span class="shipping-free">免運費</span>
+            </div>
+            
+            <div class="summary-line total">
+                <span>應付總額</span>
+                <span class="total-amount">$<span id="totalPrice">0</span></span>
+            </div>
+
+            <div class="summary-btns">
+                <button class="checkout-btn" onclick="checkout()">立即前往結帳</button>
+                <button class="clear-cart-text" onclick="clearCart()">清空購物車內項目</button>
+            </div>
+        </div> -->
+    </section>
+
+    <script src="products.js"></script>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function renderCart() {
+            const container = document.getElementById("cartContainer");
+            const summary = document.getElementById("cartSummary");
+            container.innerHTML = "";
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 50px;">
+                        <p style="font-size: 20px; color: #888;">購物車內目前沒有商品</p>
+                        <a href="products.html" class="cart-btn" style="display:inline-block; margin-top:20px; text-decoration:none;">去逛逛吧</a>
+                    </div>`;
+                summary.style.display = "none";
+                updateBadge();
+                return;
+            }
+
+            summary.style.display = "block";
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                const product = products.find(p => p.id === item.id);
+                if (product) {
+                    // 關鍵修正：讀取存入的 specIndex，若無則預設 0
+                    const spec = product.specs[item.specIndex || 0];
+                    const subtotal = spec.price * item.quantity;
+                    total += subtotal;
+
+                    container.innerHTML += `
+                        <div class="cart-item">
+                            <img src="${spec.img}" alt="${product.name}">
+                            <div class="item-info">
+                                <h3>${product.name}</h3>
+                                <div class="item-spec">規格：${spec.label}</div>
+                                <p style="margin-top:10px;">單價：$${spec.price}</p>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="cart-btn" onclick="changeQuantity(${index}, -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="cart-btn" onclick="changeQuantity(${index}, 1)">+</button>
+                            </div>
+                            <div class="price-info">
+                                <p style="font-size: 18px; font-weight: bold;">$${subtotal}</p>
+                                <span class="remove-link" onclick="removeItem(${index})">移除項目</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById("totalPrice").innerText = total.toLocaleString();
+            updateBadge();
+        }
+
+        function changeQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                removeItem(index);
+            } else {
+                saveAndUpdate();
+            }
+        }
+
+        function removeItem(index) {
+            if(confirm("確定要移除這項商品嗎？")) {
+                cart.splice(index, 1);
+                saveAndUpdate();
+            }
+        }
+
+        function clearCart() {
+            if(confirm("確定要清空整個購物車嗎？")) {
+                cart = [];
+                saveAndUpdate();
+            }
+        }
+
+        function saveAndUpdate() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function updateBadge() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById("cartCount").innerText = count;
+        }
+
+        // 原版
+        function checkout() {
+            alert("感謝您的訂購！結帳功能串接中...");
+        }
+        //新版
+        function checkout() {
+            if (cart.length === 0) return;
+
+            const btn = document.querySelector(".checkout-btn");
+            const originalText = btn.innerText;
+
+            // 模擬網路傳輸狀態
+            btn.innerText = "處理中...";
+            btn.style.opacity = "0.7";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert("✅ 訂單已完成！\n商品將於 24 小時內為您出貨。");
+
+                // 歸零並清空
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // 更新 UI
+                renderCart();
+                const countEl = document.getElementById("cartCount");
+                if (countEl) countEl.innerText = "0";
+
+                // 恢復按鈕狀態（雖然 renderCart 會隱藏它，但這是好習慣）
+                btn.innerText = originalText;
+                btn.style.opacity = "1";
+                btn.disabled = false;
+            }, 1500); // 模擬 1.5 秒的結帳過程
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById("navMenu");
+            menu.classList.toggle("active");
+        }
+
+        // 初始化渲染
+        renderCart();
+    </script>
+</body>
+</html>

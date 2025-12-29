@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>會員登入｜TechNova</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 登入頁專用樣式 */
+        .auth-container {
+            min-height: calc(100vh - 60px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        .auth-box {
+            background: #1a1a1a;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            color: #888;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            color: #ff4d4d;
+            border-bottom: 2px solid #ff4d4d;
+        }
+
+        .auth-form {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-form.active {
+            display: flex;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #ff4d4d;
+            box-shadow: 0 0 8px rgba(255, 77, 77, 0.2);
+        }
+
+        .submit-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #ff6666;
+            transform: translateY(-2px);
+        }
+
+        .auth-footer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .auth-footer a {
+            color: #ff4d4d;
+            text-decoration: none;
+        }
+
+        /* 彈窗背景 */
+        .modal-overlay {
+            display: none; /* 預設隱藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px); /* 背景模糊，增加質感 */
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 彈窗動畫 */
+        .modal-content {
+            position: relative;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            color: #666;
+            font-size: 28px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #ff4d4d;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo" onclick="location.href='index.html'" style="cursor:pointer">TechNova</div>
+        <nav id="navMenu">
+            <a href="index.html">首頁</a>
+            <a href="products.html">商品</a>
+        </nav>
+    </header>
+
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-tabs">
+                <div class="tab active" onclick="switchTab('login')">登入</div>
+                <div class="tab" onclick="switchTab('register')">註冊</div>
+            </div>
+
+            <form id="loginForm" class="auth-form active" onsubmit="handleAuth(event, 'login')">
+                <div class="input-group">
+                    <label>電子郵件</label>
+                    <input type="email" placeholder="example@mail.com" required>
+                </div>
+                <div class="input-group">
+                    <label>密碼</label>
+                    <input type="password" placeholder="請輸入密碼" required>
+                </div>
+                <button type="submit" class="submit-btn">立即登入</button>
+                <div class="auth-footer">
+                    <a href="#"onclick="openForgotModal(event)">忘記密碼？</a>
+                </div>
+            </form>
+
+            <form id="registerForm" class="auth-form" onsubmit="handleAuth(event, 'register')">
+                <div class="input-group">
+                    <label>使用者名稱</label>
+                    <input type="text" placeholder="您的暱稱" required>
+                </div>
+                <div class="input-group">
+                    <label>電子郵件</label>
+                    <input type="email" placeholder="example@mail.com" required>
+                </div>
+                <div class="input-group">
+                    <label>密碼</label>
+                    <input type="password" placeholder="至少 6 位字元" required>
+                </div>
+                <button type="submit" class="submit-btn">建立帳號</button>
+                <div class="auth-footer">
+                    點擊註冊即代表同意 <a href="terms.html">服務條款</a>
+                </div>
+            </form>
+
+            <div id="forgotModal" class="modal-overlay">
+                <div class="auth-box modal-content">
+                    <span class="close-btn" onclick="closeForgotModal()">&times;</span>
+                    <h2 style="color: #fff; margin-bottom: 20px;">找回密碼</h2>
+                    <p style="color: #888; font-size: 14px; margin-bottom: 25px;">請輸入您的註冊信箱，我們將向您發送密碼重設連結。</p>
+                    
+                    <form onsubmit="handleForgotSubmit(event)">
+                        <div class="input-group">
+                            <label>電子郵件</label>
+                            <input type="email" id="forgotEmail" placeholder="example@mail.com" required>
+                        </div>
+                        <button type="submit" class="submit-btn" style="width: 100%;">發送重設郵件</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(type) {
+            // 切換 Tab 樣式
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 切換表單顯示
+            const forms = document.querySelectorAll('.auth-form');
+            forms.forEach(form => form.classList.remove('active'));
+            
+            if (type === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
+
+        function handleAuth(event, type) {
+            event.preventDefault();
+            // 這裡模擬登入邏輯
+            const message = type === 'login' ? "登入成功！歡迎回來。" : "註冊成功！歡迎加入 TechNova。";
+            alert(message);
+            location.href = 'index.html'; // 跳轉回首頁
+        }
+
+        // 開啟彈窗
+        function openForgotModal(event) {
+            if(event) event.preventDefault();
+            document.getElementById('forgotModal').style.display = 'flex';
+        }
+
+        // 關閉彈窗
+        function closeForgotModal() {
+            document.getElementById('forgotModal').style.display = 'none';
+        }
+
+        // 處理發送郵件
+        function handleForgotSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('forgotEmail').value;
+            
+            // 模擬發送過程
+            const btn = event.target.querySelector('button');
+            btn.innerText = "發送中...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert(`驗證郵件已發送至：${email}\n請於 30 分鐘內點擊連結重設密碼。`);
+                closeForgotModal();
+                btn.innerText = "發送重設郵件";
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        // 點擊背景也可關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('forgotModal');
+            if (event.target == modal) {
+                closeForgotModal();
+            }
+        }
+    </script>
+    
+</body>
+</html>
